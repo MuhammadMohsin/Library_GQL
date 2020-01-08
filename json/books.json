@@ -1,0 +1,5 @@
+[
+    { "id": "1", "name": "ABC 1", "genre": "story" , "authorId":  "1"},
+    { "id": "2", "name": "ABC 2", "genre": "poetry" , "authorId":  "2"},
+    { "id": "3", "name": "ABC 3", "genre": "poetry" , "authorId":  "3"}
+]
