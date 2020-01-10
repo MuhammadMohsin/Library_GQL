@@ -7,7 +7,8 @@ const BookType = require("./Book");
 const {
     GraphQLObjectType,
     GraphQLSchema,
-    GraphQLID
+    GraphQLID,
+    GraphQLList
 } = graphql;
 
 
@@ -26,6 +27,18 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 return authors.find((author) => author.id === args.id)
+            }
+        },
+        books: {
+            type: new GraphQLList(BookType),
+            resolve(){
+                return books
+            }
+        },
+        authors: {
+            type: new GraphQLList(AuthorType),
+            resolve(){
+                return authors
             }
         }
     }
