@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import styled from 'styled-components';
 var serialize = require('form-serialize');
 
@@ -11,7 +11,8 @@ const getDetails = gql`
             name,
             genre,
             author {
-                name
+                name,
+                id
             }
         },
         authors {
@@ -20,20 +21,38 @@ const getDetails = gql`
             age
         }
     }`
+const addBookMutation = gql`
+    mutation AddBook($name: String!, $genre: String!, $authorId: String!) {
+        addBook(name: $name, genre: $genre, authorId: $authorId) {
+        id,
+        genre,
+        authorId
+      }
+    }
+  `;
 
 function BookList() {
 
     const [currentView, setCurrentView] = useState('add');
+    const [addBook] = useMutation(addBookMutation);
 
     const response = useQuery(getDetails);
     if (response?.loading)
         return null;
     const { books, authors } = response.data;
 
-    const addBook = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         var bookObj = serialize(e.target, { hash: true });
-        console.log(bookObj);
+        addBook({
+            variables: {
+                name: bookObj.name,
+                genre: bookObj.genre,
+                authorId: bookObj.authorId
+            },
+            refetchQueries: [{query: getDetails}]
+        });
+        setCurrentView('book');
     }
 
     return (
@@ -43,7 +62,7 @@ function BookList() {
                     <h1>Add Book</h1>
                     <Button onClick={() => setCurrentView('book')}>See All</Button>
                 </HeaderContainer>
-                <form onSubmit={addBook}>
+                <form onSubmit={handleSubmit}>
                     <Table>
                         <tbody>
                             <tr>
@@ -57,7 +76,7 @@ function BookList() {
                             <tr>
                                 <td>Author</td>
                                 <td>
-                                    <Select defaultValue={""} required name="author">
+                                    <Select defaultValue={""} required name="authorId">
                                         <option hidden value="">Select Author</option>
                                         {authors.map(author =>
                                             <option key={author.id} value={author.id}>{author.name}</option>
