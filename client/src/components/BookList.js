@@ -33,7 +33,7 @@ const addBookMutation = gql`
 
 function BookList() {
 
-    const [currentView, setCurrentView] = useState('view');
+    const [currentView, setCurrentView] = useState('book');
     const [addBook] = useMutation(addBookMutation);
 
     const response = useQuery(getDetails);
@@ -50,7 +50,7 @@ function BookList() {
                 genre: bookObj.genre,
                 authorId: bookObj.authorId
             },
-            refetchQueries: [{query: getDetails}]
+            refetchQueries: [{ query: getDetails }]
         });
         setCurrentView('book');
     }
@@ -67,7 +67,7 @@ function BookList() {
                         <tbody>
                             <tr>
                                 <td>Book Name</td>
-                                <td><Input type="text" required name="name"/></td>
+                                <td><Input type="text" required name="name" /></td>
                             </tr>
                             <tr>
                                 <td>Genre</td>
@@ -84,7 +84,6 @@ function BookList() {
                                     </Select>
                                 </td>
                             </tr>
-
                             <tr>
                                 <td></td>
                                 <td colSpan="2">
@@ -108,21 +107,30 @@ function BookList() {
                                 <th>Author</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {books.map(book => {
-                                return (
-                                    <tr key={book.id} className="book-info">
-                                        <td>{book.name || '-'} </td>
-                                        <td>{book.genre || '-'}</td>
-                                        <td>{book.author?.name || '-'}</td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
+                        {!(books && books.length) ? (
+                            <tbody>
+                                <tr>
+                                    <td colSpan="3">
+                                        <h3 align="center">No Book Available!</h3>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        ) :
+                            <tbody>
+                                {books.map(book => {
+                                    return (
+                                        <tr key={book.id} className="book-info">
+                                            <td>{book.name || '-'} </td>
+                                            <td>{book.genre || '-'}</td>
+                                            <td>{book.author?.name || '-'}</td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        }
                     </BooksTable>
                 </div>
             }
-
         </Container>
     )
 }
