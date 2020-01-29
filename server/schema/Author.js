@@ -21,7 +21,6 @@ const AuthorType = new GraphQLObjectType({
                 return books.filter(book=> book.authorId == parent.id)
             }
         }
-       
     })
 })
 

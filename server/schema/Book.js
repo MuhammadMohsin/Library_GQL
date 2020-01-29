@@ -1,13 +1,11 @@
 const graphql = require("graphql");
-const authors = require('./../json/authors.json');
 const AuthorType = require("./Author");
 
 const {
     GraphQLObjectType,
     GraphQLString,
-    GraphQLID
+    GraphQLID,
 } = graphql;
-
 
 const BookType = new GraphQLObjectType({
     name: 'Book',
@@ -16,13 +14,8 @@ const BookType = new GraphQLObjectType({
         name: { type: GraphQLString },
         genre: { type: GraphQLString },
         authorId: { type: GraphQLID },
-        author: {
-            type: AuthorType,
-            resolve(parent, args) {
-                return authors.find(author => author.id === parent.authorId)
-            }
-        }
+        author: { type: AuthorType }
     })
-})
+});
 
 module.exports = BookType;

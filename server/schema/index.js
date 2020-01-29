@@ -16,7 +16,6 @@ const {
     GraphQLNonNull
 } = graphql;
 
-
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
@@ -38,14 +37,28 @@ const RootQuery = new GraphQLObjectType({
         },
         books: {
             type: new GraphQLList(BookType),
-            resolve(){
+            resolve() {
                 // return books;
-                return Book.find({});
+                return new Promise((res, rej) => {
+                    Book.find({}).populate('authorId')
+                        .exec(function (err, books) {
+                            if (err) {
+                                console.log("error in all books: ", err);
+                                rej(er);
+                            }
+                            const filteredBooks = books.map(book => {
+                                book.author = book.authorId;
+                                book.authorId = book.authorId.id.toString();
+                                return book;
+                            })
+                            res(filteredBooks);
+                        });
+                })
             }
         },
         authors: {
             type: new GraphQLList(AuthorType),
-            resolve(){
+            resolve() {
                 // return authors;
                 return Author.find({});
             }
@@ -62,7 +75,7 @@ const Mutation = new GraphQLObjectType({
                 name: { type: new GraphQLNonNull(GraphQLString) },
                 age: { type: new GraphQLNonNull(GraphQLInt) }
             },
-            resolve(parent, args){
+            resolve(parent, args) {
                 const author = new Author({
                     name: args.name,
                     age: args.age,
@@ -77,7 +90,8 @@ const Mutation = new GraphQLObjectType({
                 genre: { type: GraphQLString },
                 authorId: { type: new GraphQLNonNull(GraphQLString) },
             },
-            resolve(parent, args){
+            resolve(parent, args) {
+                console.log(args)
                 const book = new Book({
                     name: args.name,
                     genre: args.genre,
@@ -88,7 +102,6 @@ const Mutation = new GraphQLObjectType({
         }
     }
 })
-
 
 module.exports = new GraphQLSchema({
     query: RootQuery,

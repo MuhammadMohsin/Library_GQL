@@ -33,7 +33,7 @@ const addBookMutation = gql`
 
 function BookList() {
 
-    const [currentView, setCurrentView] = useState('add');
+    const [currentView, setCurrentView] = useState('view');
     const [addBook] = useMutation(addBookMutation);
 
     const response = useQuery(getDetails);
